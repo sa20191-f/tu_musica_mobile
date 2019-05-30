@@ -2,6 +2,18 @@ import React from 'react';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { AppLoading, Asset, Font, Icon } from 'expo';
 import AppNavigator from './navigation/AppNavigator';
+import ApolloClient from 'apollo-client';
+import { ApolloProvider } from 'react-apollo';
+import { HttpLink } from 'apollo-link-http';
+import { InMemoryCache } from 'apollo-cache-inmemory';
+
+const cache = new InMemoryCache();
+const client = new ApolloClient({
+  link: new HttpLink({
+    uri: 'http://192.168.1.57:5000/graphql'
+  }),
+  cache,
+});
 
 export default class App extends React.Component {
   state = {
@@ -19,10 +31,12 @@ export default class App extends React.Component {
       );
     } else {
       return (
-        <View style={styles.container}>
-          {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-          <AppNavigator />
-        </View>
+        <ApolloProvider client={client}>
+          <View style={styles.container}>
+            {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+            <AppNavigator />
+          </View>
+        </ApolloProvider>
       );
     }
   }
