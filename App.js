@@ -4,12 +4,12 @@ import { AppLoading, Asset, Font, Icon } from 'expo';
 import AppNavigator from './navigation/AppNavigator';
 import ApolloClient from 'apollo-client';
 import { ApolloProvider } from 'react-apollo';
-import { HttpLink } from 'apollo-link-http';
+import { createUploadLink } from 'apollo-upload-client';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 
 const cache = new InMemoryCache();
 const client = new ApolloClient({
-  link: new HttpLink({
+  link: createUploadLink({
     uri: 'http://192.168.1.57:5000/graphql'
   }),
   cache,

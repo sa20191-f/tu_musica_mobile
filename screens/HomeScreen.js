@@ -3,10 +3,12 @@ import {
   ScrollView,
   StyleSheet,
   View,
+  Button
 } from 'react-native';
-import { graphql, compose } from 'react-apollo';
+import { graphql, compose, Mutation } from 'react-apollo';
+import { ReactNativeFile } from 'apollo-upload-client';
+import { FileSystem, DocumentPicker } from 'expo';
 import gql from 'graphql-tag';
- 
 
 class HomeScreen extends React.Component {
   static navigationOptions = {
@@ -19,20 +21,32 @@ class HomeScreen extends React.Component {
     return (
       <View style={styles.container}>
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+        <Mutation mutation={TEST_FILE}>
+          {(uploadSongMutation) => 
+            <Button
+              onPress={() => this._onPressLearnMore(uploadSongMutation)}
+              title="Learn More"
+              color="#841584"
+              accessibilityLabel="Learn more about this purple button"
+            />
+          }
+        </Mutation>
         </ScrollView>
       </View>
     );
   }
 
-  componentDidMount() {
-    fetch('http://192.168.1.57:3004/api/test').then(response => {
-      console.log('ES LA PRIMERA');
-      console.log(response);
-    }).catch(e =>  console.log(e));
-    this.props.testApi.refetch().then(response => {
-      console.log('ES LA SEGUNDA');
-      console.log(response);
-    }).catch(e =>  console.log(e));
+  _onPressLearnMore = async(mutation) => {
+    const song = await DocumentPicker.getDocumentAsync();
+    const infoSong = await FileSystem.getInfoAsync(song.uri);
+    const file = new ReactNativeFile({
+      uri: infoSong.uri,
+      name: song.name,
+      type: 'audio/mp3'
+    });
+    mutation({
+      variables: { file },
+    });
   }
 }
 const TEST_API = gql`
@@ -40,6 +54,13 @@ query {
   songTest
 }
 `
+const TEST_FILE = gql`
+  mutation uploadSong($file: Upload) {
+    uploadSong(file: $file) {
+      filename
+    }
+  }
+`;
 
 const styles = StyleSheet.create({
   container: {
@@ -54,5 +75,8 @@ const styles = StyleSheet.create({
 export default compose(
   graphql(TEST_API, {
     name: 'testApi',
+  }),
+  graphql(TEST_FILE, {
+    name: 'testFile',
   }),
 )(HomeScreen);
