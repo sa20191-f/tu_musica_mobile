@@ -55,7 +55,7 @@ query {
 }
 `
 const TEST_FILE = gql`
-  mutation uploadSong($file: Upload) {
+  mutation uploadSong($file: Upload!) {
     uploadSong(file: $file) {
       filename
     }
