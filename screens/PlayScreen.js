@@ -5,7 +5,7 @@ import { Icon } from 'expo';
 
 export default class PlayScreen extends React.Component {
   static navigationOptions = {
-    title: 'PLAYING FROM MUSIC',
+    title: 'Playing from music',
   };
   state = {
     title: 'HOLA',
