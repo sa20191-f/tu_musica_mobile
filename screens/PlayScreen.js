@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, ImageBackground,
-  View, Text, Slider, Platform } from 'react-native';
+  View, Slider, Platform } from 'react-native';
+import { StyleText }  from '../components/StyleText';
 import { Icon } from 'expo';
 
 export default class PlayScreen extends React.Component {
@@ -27,8 +28,8 @@ export default class PlayScreen extends React.Component {
           </View>
           <View style={styles.artistContainer}>
             <View style={styles.artistDetailWrapper}>
-              <Text style={styles.artistTitle}>{this.state.title}</Text>
-              <Text style={styles.artistText}>{this.state.artist}</Text>
+              <StyleText style={styles.artistTitle}>{this.state.title}</StyleText>
+              <StyleText style={styles.artistText}>{this.state.artist}</StyleText>
             </View>
           </View>
           <View style={styles.sliderContainer}>

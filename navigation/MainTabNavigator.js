@@ -10,14 +10,14 @@ import ListScreen from '../screens/ListScreen';
 const headerStyles = {
   headerStyle: {
     backgroundColor: '#000',
-    color: '#fff'
-  },
-  headerTitleStyle: {
-    color: '#fff'
+    color: '#fff',
+    fontFamily: 'archivo-narrow'
   },
   headerTintColor: '#fff',
   headerTitleStyle: {
     fontWeight: 'bold',
+    color: '#fff',
+    fontFamily: 'archivo-narrow',
   },
 }
 const HomeStack = createStackNavigator({

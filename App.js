@@ -51,7 +51,7 @@ export default class App extends React.Component {
       ]),
       Font.loadAsync({
         ...Icon.Ionicons.font,
-       /*  'archivo-narrow': require('./assets/fonts/ArchivoNarrow-Regular.woff2'), */
+        'archivo-narrow': require('./assets/fonts/ArchivoNarrow-Regular.ttf'),
       }),
     ]);
   };
@@ -69,6 +69,5 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    /* fontFamily: 'archivo-narrow' */
   },
 });

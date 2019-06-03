@@ -1,5 +1,6 @@
 import React from 'react';
-import { Image, View, StyleSheet, Text } from 'react-native'; 
+import { Image, View, StyleSheet } from 'react-native'; 
+import { StyleText } from './StyleText';
 
 class ListItem extends React.Component {
   constructor(props) {
@@ -17,12 +18,12 @@ class ListItem extends React.Component {
             />
           </View>
           <View style={styles.albumInfoContainer}>
-            <Text style={styles.albumText}>
+            <StyleText style={styles.albumText}>
               {title}
-            </Text>
-            <Text style={{ color: 'white', }}>
+            </StyleText>
+            <StyleText style={{ color: 'white', }}>
               {subtitle}
-            </Text>
+            </StyleText>
           </View>
         </View>
       </View>
