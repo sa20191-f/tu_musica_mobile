@@ -1,5 +1,6 @@
 import React from 'react';
-import { Image, View, StyleSheet, Text } from 'react-native'; 
+import { Image, View, StyleSheet } from 'react-native'; 
+import { StyleText } from './StyleText';
 
 class ListItem extends React.Component {
   constructor(props) {
@@ -9,19 +10,21 @@ class ListItem extends React.Component {
     const { title, image, subtitle } = this.props;
     return (
       <View style={styles.singleAlbumContainer}>
-        <View style={styles.imageContainer}>
-          <Image 
-            style={styles.imageStyle}
-            source={image ? image : require('../assets/images/music-album.png')}
-          />
-        </View>
-        <View style={styles.albumInfoContainer}>
-          <Text style={styles.albumText}>
-            {title}
-          </Text>
-          <Text>
-            {subtitle}
-          </Text>
+        <View style={styles.boxContainer}>
+          <View>
+            <Image 
+              style={styles.imageStyle}
+              source={image ? image : require('../assets/images/music-album2.jpg')}
+            />
+          </View>
+          <View style={styles.albumInfoContainer}>
+            <StyleText style={styles.albumText}>
+              {title}
+            </StyleText>
+            <StyleText style={{ color: 'white', }}>
+              {subtitle}
+            </StyleText>
+          </View>
         </View>
       </View>
     );
@@ -30,31 +33,37 @@ class ListItem extends React.Component {
 
 const styles = StyleSheet.create({
   singleAlbumContainer: {
-    padding: 10,
-    flex: 1, 
-    flexDirection: 'column',
+    flex: 1,
     justifyContent: 'center',
-    backgroundColor: 'green',
+    alignItems: 'center',
+    flexDirection: 'column',
+  },
+  boxContainer: {
+    shadowColor: 'rgba(0, 0, 0, 0.15)',
+    shadowRadius: 2,
+    shadowOffset: {
+      height: 1,
+      width: 1
+    },
+    paddingHorizontal: 10,
+    paddingVertical: 20,
   },
   albumInfoContainer: {
     paddingVertical: 15,
-    flex: 1,
-    flexDirection: 'column',
     justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
+    
   },
   imageStyle: {
-    width: 50,
-    height: 50,
-  },
-  imageContainer: {
-    flex: 3,
-    flexDirection: 'column',
-    justifyContent: 'center',
+    width: 140,
+    height: 150,
   },
   albumText: {
     fontSize: 18,
     marginBottom: 0,
     textTransform: 'uppercase',
+    color: 'white',
   },
 });
 

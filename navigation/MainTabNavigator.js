@@ -7,19 +7,32 @@ import HomeScreen from '../screens/HomeScreen';
 import PlayScreen from '../screens/PlayScreen';
 import ListScreen from '../screens/ListScreen';
 
+const headerStyles = {
+  headerStyle: {
+    backgroundColor: '#000',
+    color: '#fff',
+    fontFamily: 'archivo-narrow',
+  },
+  headerTintColor: '#fff',
+  headerTitleStyle: {
+    fontWeight: 'bold',
+    color: '#fff',
+    fontFamily: 'archivo-narrow',
+  },
+}
 const HomeStack = createStackNavigator({
   Home: HomeScreen,
+}, {
+  defaultNavigationOptions: headerStyles,
 });
 
 HomeStack.navigationOptions = {
-  tabBarLabel: 'Home',
+  tabBarLabel: 'Musica',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
       name={
-        Platform.OS === 'ios'
-          ? `ios-information-circle${focused ? '' : '-outline'}`
-          : 'md-information-circle'
+        Platform.OS === 'ios' ? 'ios-search' : 'md-search'
       }
     />
   ),
@@ -27,6 +40,8 @@ HomeStack.navigationOptions = {
 
 const PlayStack = createStackNavigator({
   Play: PlayScreen,
+}, {
+  defaultNavigationOptions: headerStyles,
 });
 
 PlayStack.navigationOptions = {
@@ -41,6 +56,8 @@ PlayStack.navigationOptions = {
 
 const ListStack = createStackNavigator({
   List: ListScreen,
+}, {
+  defaultNavigationOptions: headerStyles,
 });
 
 ListStack.navigationOptions = {
@@ -57,4 +74,11 @@ export default createBottomTabNavigator({
   HomeStack,
   PlayStack,
   ListStack,
+}, {
+  tabBarOptions: {
+    style: {
+      backgroundColor: '#000',
+      color: '#fff'
+    }
+  },
 });
