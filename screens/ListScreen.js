@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, FlatList, View } from 'react-native';
+import { StyleSheet, FlatList, View, ImageBackground } from 'react-native';
+import { Button } from 'react-native-elements';
 import ListItem from '../components/ListItem';
 
 class ListScreen extends React.Component {
@@ -28,17 +29,26 @@ class ListScreen extends React.Component {
   }
   render() {
     return (
-      <View style={styles.container}>
-        <FlatList
-          contentContainerStyle={styles.listContainer}
-          data={this.state.albums}
-          renderItem={
-            ({ item }) => <ListItem title={item.title} subtitle={item.subtitle} />
-          }
-          numColumns={2}
-          keyExtractor={(item, index) => index}
-        />
-      </View>
+      <ImageBackground
+        source={require('../assets/images/lists-background.jpg')}
+        style={styles.backgroundStyle}
+      >
+        <View style={styles.container}>
+          <Button
+            title='Add List'
+            style={styles.buttonStyle}
+          />
+          <FlatList
+            contentContainerStyle={styles.listContainer}
+            data={this.state.albums}
+            renderItem={
+              ({ item }) => <ListItem title={item.title} subtitle={item.subtitle} />
+            }
+            numColumns={2}
+            keyExtractor={(item, index) => index}
+          />
+        </View>
+      </ImageBackground>
     )
   }
 }
@@ -46,10 +56,18 @@ class ListScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'column',
+    backgroundColor:'rgba(0,0,0,0.7)',
   },
   listContainer: { 
-    backgroundColor: 'yellow'
+    flexGrow: 1,
+  },
+  buttonStyle: {
+    margin: 10,
+  },
+  backgroundStyle : {
+    flex: 1,
+    width: '100%',
+    height: '100%',
   }
 })
 export default ListScreen;
