@@ -45,6 +45,7 @@ export default class App extends React.Component {
     return Promise.all([
       Asset.loadAsync([
         require('./assets/images/play-background.jpg'),
+        require('./assets/images/music-album.png'),
       ]),
       Font.loadAsync({
         ...Icon.Ionicons.font,
