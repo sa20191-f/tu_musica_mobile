@@ -7,8 +7,23 @@ import HomeScreen from '../screens/HomeScreen';
 import PlayScreen from '../screens/PlayScreen';
 import ListScreen from '../screens/ListScreen';
 
+const headerStyles = {
+  headerStyle: {
+    backgroundColor: '#000',
+    color: '#fff'
+  },
+  headerTitleStyle: {
+    color: '#fff'
+  },
+  headerTintColor: '#fff',
+  headerTitleStyle: {
+    fontWeight: 'bold',
+  },
+}
 const HomeStack = createStackNavigator({
   Home: HomeScreen,
+}, {
+  defaultNavigationOptions: headerStyles,
 });
 
 HomeStack.navigationOptions = {
@@ -27,6 +42,8 @@ HomeStack.navigationOptions = {
 
 const PlayStack = createStackNavigator({
   Play: PlayScreen,
+}, {
+  defaultNavigationOptions: headerStyles,
 });
 
 PlayStack.navigationOptions = {
@@ -41,6 +58,8 @@ PlayStack.navigationOptions = {
 
 const ListStack = createStackNavigator({
   List: ListScreen,
+}, {
+  defaultNavigationOptions: headerStyles,
 });
 
 ListStack.navigationOptions = {
