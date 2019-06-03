@@ -27,14 +27,12 @@ const HomeStack = createStackNavigator({
 });
 
 HomeStack.navigationOptions = {
-  tabBarLabel: 'Home',
+  tabBarLabel: 'Musica',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
       name={
-        Platform.OS === 'ios'
-          ? `ios-information-circle${focused ? '' : '-outline'}`
-          : 'md-information-circle'
+        Platform.OS === 'ios' ? 'ios-search' : 'md-search'
       }
     />
   ),
@@ -76,4 +74,11 @@ export default createBottomTabNavigator({
   HomeStack,
   PlayStack,
   ListStack,
+}, {
+  tabBarOptions: {
+    style: {
+      backgroundColor: '#000',
+      color: '#fff'
+    }
+  },
 });
