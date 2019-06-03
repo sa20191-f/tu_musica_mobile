@@ -38,39 +38,52 @@ const formStyles = {
 
 export default class LoginScreen extends React.Component {
   static navigationOptions = {
-    title: 'Crea una cuenta',
+    title: 'Accede a tu cuenta',
   };
   handleSubmit = () => {
     const value = this._form.getValue();
     console.log('value: ', value);
   }
-  
+
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.textContainer}>Únete a esta gran familia</Text>
-        <Form 
-          
+        <Text style={styles.textContainer}>Bienvenido de vuelta</Text>
+        <Form
+
           ref={c => this._form = c}
-          type={User} 
+          type={User}
         />
         <Button
-          title="Sign Up!"
+          title="Log in!"
           onPress={this.handleSubmit}
+        />
+        <Text style={styles.smallTextContainer}>¿No tienes una cuenta? Regístrate</Text>
+        <Button
+          title="Sign Up!"
+          onPress={this._navigate}
         />
       </View>
     );
+  }
+  _navigate = () => {
+    this.props.navigation.navigate('SignUpScreen');
   }
 }
 
 const styles = StyleSheet.create({
   textContainer: {
-    // flex: 1,
     fontSize: 22,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 15,
-    backgroundColor: '#f00',
+    paddingBottom: 15,
+  },
+  smallTextContainer: {
+    fontSize: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 45,
+    paddingBottom: 10,
   },
   container: {
     justifyContent: 'center',

@@ -44,33 +44,44 @@ export default class SignUpScreen extends React.Component {
     const value = this._form.getValue();
     console.log('value: ', value);
   }
-  
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.textContainer}>Únete a esta gran familia</Text>
-        <Form 
-          
+        <Text style={styles.textContainer}>Bienvenido a esta gran familia</Text>
+        <Form
           ref={c => this._form = c}
-          type={User} 
+          type={User}
         />
         <Button
-          title="Sign Up!"
+          title="Sign up!"
           onPress={this.handleSubmit}
+        />
+        <Text style={styles.smallTextContainer}>¿Ya tienes una cuenta? Inicia sesión</Text>
+        <Button
+          title="Log in"
+          onPress={this._navigate}
         />
       </View>
     );
+  }
+  _navigate = () => {
+    this.props.navigation.navigate('LoginScreen');
   }
 }
 
 const styles = StyleSheet.create({
   textContainer: {
-    // flex: 1,
     fontSize: 22,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 15,
-    backgroundColor: '#f00',
+    paddingBottom: 15,
+  },
+  smallTextContainer: {
+    fontSize: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 45,
+    paddingBottom: 10,
   },
   container: {
     justifyContent: 'center',
