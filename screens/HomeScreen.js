@@ -1,82 +1,68 @@
 import React from 'react';
-import {
-  ScrollView,
-  StyleSheet,
-  View,
-  Button
-} from 'react-native';
-import { graphql, compose, Mutation } from 'react-apollo';
-import { ReactNativeFile } from 'apollo-upload-client';
-import { FileSystem, DocumentPicker } from 'expo';
-import gql from 'graphql-tag';
+import { FlatList, View, StyleSheet, ImageBackground } from 'react-native';
+import SongItem from '../components/SongItem';
 
 class HomeScreen extends React.Component {
   static navigationOptions = {
-    header: null,
+    title: 'TU MUSICA',
   };
-  state = {
-    response: '',
+  constructor(props) {
+    super(props);
+  }
+  state = { 
+    albums: [
+      {
+        title: 'Hola',
+        subtitle: 'Que mas pues',
+      },
+      {
+        title: 'Todo',
+        subtitle: 'Bien y usted',
+      },
+      {
+        title: 'La puteria',
+        subtitle: 'Pana',
+      },
+      {
+        title: 'Hola',
+        subtitle: 'Que mas pues',
+      }, 
+    ]
   }
   render() {
     return (
-      <View style={styles.container}>
-        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-        <Mutation mutation={TEST_FILE}>
-          {(uploadSongMutation) => 
-            <Button
-              onPress={() => this._onPressLearnMore(uploadSongMutation)}
-              title="Learn More"
-              color="#841584"
-              accessibilityLabel="Learn more about this purple button"
-            />
-          }
-        </Mutation>
-        </ScrollView>
-      </View>
+      <ImageBackground
+        source={require('../assets/images/home-background.jpg')}
+        style={styles.backgroundStyle}
+      >
+        <View style={styles.container}>
+          <FlatList 
+            contentContainerStyle={styles.listContainer}
+            data={this.state.albums}
+            renderItem={
+              ({ item }) => <SongItem title={item.title} subtitle={item.subtitle} />
+            }
+            numColumns={1}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        </View>
+      </ImageBackground>
     );
   }
-
-  _onPressLearnMore = async(mutation) => {
-    const song = await DocumentPicker.getDocumentAsync();
-    const infoSong = await FileSystem.getInfoAsync(song.uri);
-    const file = new ReactNativeFile({
-      uri: infoSong.uri,
-      name: song.name,
-      type: 'audio/mp3'
-    });
-    mutation({
-      variables: { file },
-    });
-  }
 }
-const TEST_API = gql`
-query {
-  songTest
-}
-`
-const TEST_FILE = gql`
-  mutation uploadSong($file: Upload!) {
-    uploadSong(file: $file) {
-      filename
-    }
-  }
-`;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor:'rgba(0,0,0,0.7)',
   },
-  contentContainer: {
-    paddingTop: 30,
+  listContainer: { 
+    flexGrow: 1,
   },
-});
-
-export default compose(
-  graphql(TEST_API, {
-    name: 'testApi',
-  }),
-  graphql(TEST_FILE, {
-    name: 'testFile',
-  }),
-)(HomeScreen);
+  backgroundStyle : {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  }
+})
+export default  HomeScreen;

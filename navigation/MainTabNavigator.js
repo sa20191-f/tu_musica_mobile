@@ -11,7 +11,7 @@ const headerStyles = {
   headerStyle: {
     backgroundColor: '#000',
     color: '#fff',
-    fontFamily: 'archivo-narrow'
+    fontFamily: 'archivo-narrow',
   },
   headerTintColor: '#fff',
   headerTitleStyle: {
