@@ -1,5 +1,7 @@
 import React from 'react';
 import { FlatList, View, StyleSheet, ImageBackground } from 'react-native';
+import { graphql, compose } from 'react-apollo';
+import gql from 'graphql-tag';
 import SongItem from '../components/SongItem';
 
 class HomeScreen extends React.Component {
@@ -27,7 +29,11 @@ class HomeScreen extends React.Component {
         title: 'Hola',
         subtitle: 'Que mas pues',
       }, 
-    ]
+    ],
+    listRefreshing: true,
+  }
+  componentDidMount() {
+    /* this._getSongsData(); */
   }
   render() {
     return (
@@ -36,7 +42,7 @@ class HomeScreen extends React.Component {
         style={styles.backgroundStyle}
       >
         <View style={styles.container}>
-          <FlatList 
+          <FlatList
             contentContainerStyle={styles.listContainer}
             data={this.state.albums}
             renderItem={
@@ -44,12 +50,26 @@ class HomeScreen extends React.Component {
             }
             numColumns={1}
             keyExtractor={(item, index) => index.toString()}
+            onRefresh={this._getSongsData}
+            refreshing={this.state.listRefreshing}
           />
         </View>
       </ImageBackground>
     );
   }
+
+  _getSongsData = async() => {
+    this.setState({ listRefreshing: true });
+    const response = await this.props.getSongs.refetch();
+    console.log(response);
+    this.setState({ listRefreshing: false });
+  }
 }
+const GET_SONG = gql`
+  query {
+    songTest
+  }
+`;
 
 const styles = StyleSheet.create({
   container: {
@@ -64,5 +84,10 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   }
-})
-export default  HomeScreen;
+});
+
+export default compose (
+  graphql(GET_SONG, {
+    name: 'getSongs',
+  }),
+)(HomeScreen)

@@ -58,6 +58,8 @@ const TEST_FILE = gql`
   mutation uploadSong($file: Upload!) {
     uploadSong(file: $file) {
       filename
+    }, {
+      token
     }
   }
 `;
@@ -72,7 +74,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default compose(
+export default compose (
   graphql(TEST_API, {
     name: 'testApi',
   }),
