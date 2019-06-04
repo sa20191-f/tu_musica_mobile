@@ -14,7 +14,7 @@ class ListItem extends React.Component {
           <View>
             <Image 
               style={styles.imageStyle}
-              source={image ? image : require('../assets/images/music-album2.jpg')}
+              source={image ? { uri: image } : require('../assets/images/music-album2.jpg')}
             />
           </View>
           <View style={styles.albumInfoContainer}>
