@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Button, Text } from 'react-native';
+import { View, StyleSheet, Button, Text, AsyncStorage, } from 'react-native';
 
 import t from 'tcomb-form-native';
 
@@ -44,6 +44,10 @@ export default class LoginScreen extends React.Component {
     const value = this._form.getValue();
     console.log('value: ', value);
   }
+  _signInAsync = async () => {
+    await AsyncStorage.setItem('userToken', 'abc');
+    this.props.navigation.navigate('Main');
+  };
 
   render() {
     return (
@@ -56,7 +60,8 @@ export default class LoginScreen extends React.Component {
         />
         <Button
           title="Log in!"
-          onPress={this.handleSubmit}
+          // onPress={this.handleSubmit}
+          onPress={this._signInAsync}
         />
         <Text style={styles.smallTextContainer}>¿No tienes una cuenta? Regístrate</Text>
         <Button

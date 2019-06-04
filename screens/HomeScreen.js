@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, View, StyleSheet, ImageBackground } from 'react-native';
+import { FlatList, View, StyleSheet, ImageBackground, AsyncStorage, Button } from 'react-native';
 import SongItem from '../components/SongItem';
 
 class HomeScreen extends React.Component {
@@ -29,6 +29,10 @@ class HomeScreen extends React.Component {
       }, 
     ]
   }
+  _signOutAsync = async () => {
+    await AsyncStorage.clear();
+    this.props.navigation.navigate('Auth');
+  };
   render() {
     return (
       <ImageBackground
@@ -46,6 +50,7 @@ class HomeScreen extends React.Component {
             keyExtractor={(item, index) => index.toString()}
           />
         </View>
+        <Button title="Actually, sign me out :)" onPress={this._signOutAsync} />
       </ImageBackground>
     );
   }
