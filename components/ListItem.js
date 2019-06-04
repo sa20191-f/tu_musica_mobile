@@ -21,9 +21,11 @@ class ListItem extends React.Component {
             <StyleText style={styles.albumText}>
               {title}
             </StyleText>
-            <StyleText style={{ color: 'white', }}>
+            {subtitle &&
+              <StyleText style={{ color: 'white', }}>
               {subtitle}
-            </StyleText>
+              </StyleText>
+            }
           </View>
         </View>
       </View>
