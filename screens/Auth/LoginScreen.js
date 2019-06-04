@@ -60,8 +60,7 @@ export default class LoginScreen extends React.Component {
         />
         <Button
           title="Log in!"
-          // onPress={this.handleSubmit}
-          onPress={this._signInAsync}
+          onPress={() => {this.handleSubmit(); this._signInAsync();}}
         />
         <Text style={styles.smallTextContainer}>¿No tienes una cuenta? Regístrate</Text>
         <Button
