@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, View, StyleSheet, ImageBackground } from 'react-native';
+import { FlatList, View, StyleSheet, ImageBackground, AsyncStorage, Button } from 'react-native';
 import { graphql, compose } from 'react-apollo';
 import gql from 'graphql-tag';
 import SongItem from '../components/SongItem';
@@ -35,6 +35,10 @@ class HomeScreen extends React.Component {
   componentDidMount() {
     /* this._getSongsData(); */
   }
+  _signOutAsync = async () => {
+    await AsyncStorage.clear();
+    this.props.navigation.navigate('Auth');
+  };
   render() {
     return (
       <ImageBackground
@@ -54,6 +58,7 @@ class HomeScreen extends React.Component {
             refreshing={this.state.listRefreshing}
           />
         </View>
+        <Button title="Actually, sign me out :)" onPress={this._signOutAsync} />
       </ImageBackground>
     );
   }
