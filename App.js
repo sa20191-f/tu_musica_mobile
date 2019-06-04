@@ -11,6 +11,7 @@ const cache = new InMemoryCache();
 const client = new ApolloClient({
   link: createUploadLink({
     uri: 'http://172.20.10.8:5000/graphql'
+    // uri: 'http://192.168.99.102:5000/graphiql'  Fede
   }),
   cache,
 });
@@ -33,7 +34,7 @@ export default class App extends React.Component {
       return (
         <ApolloProvider client={client}>
           <View style={styles.container}>
-            {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+            {Platform.OS === 'android' && <StatusBar barStyle="default" />}
             <AppNavigator />
           </View>
         </ApolloProvider>

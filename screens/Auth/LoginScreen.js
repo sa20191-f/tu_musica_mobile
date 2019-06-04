@@ -1,6 +1,8 @@
 import React from 'react';
-import { View, StyleSheet, Button, Text, AsyncStorage, } from 'react-native';
-
+import { View, StyleSheet, Button, Text, AsyncStorage} from 'react-native';
+import { Mutation} from 'react-apollo';
+import gql from 'graphql-tag';
+import { withNavigation } from 'react-navigation';
 import t from 'tcomb-form-native';
 
 const Form = t.form.Form;
@@ -9,7 +11,6 @@ const User = t.struct({
   username: t.String,
   email: t.String,
   password: t.String,
-  // terms: t.Boolean
 });
 
 const formStyles = {
@@ -36,14 +37,45 @@ const formStyles = {
   }
 }
 
-export default class LoginScreen extends React.Component {
+const options = {
+  fields: {
+    username: {
+      stylesheet: formStyles,
+    },
+    email: {
+      stylesheet: formStyles,
+    },
+    password: {
+      stylesheet: formStyles,
+    }
+  },
+};
+
+class LoginScreen extends React.Component {
   static navigationOptions = {
     title: 'Accede a tu cuenta',
   };
-  handleSubmit = () => {
-    const value = this._form.getValue();
-    console.log('value: ', value);
+  state = {
+
   }
+  _handleSubmit = async(mutation) => {
+    const value = this._form.getValue();
+    if (value) {
+      console.log("value:", value);
+      const user = {
+        username: value.username,
+        email: value.email,
+        password: value.password
+      }
+      await mutation({
+        variables: { user },
+      });
+      console.log("variables:", variables);
+
+      this.props.navigation.goBack();
+    }
+  }
+
   _signInAsync = async () => {
     await AsyncStorage.setItem('userToken', 'abc');
     this.props.navigation.navigate('Main');
@@ -54,14 +86,19 @@ export default class LoginScreen extends React.Component {
       <View style={styles.container}>
         <Text style={styles.textContainer}>Bienvenido de vuelta</Text>
         <Form
-
           ref={c => this._form = c}
           type={User}
+          options={options}
         />
-        <Button
-          title="Log in!"
-          onPress={() => {this.handleSubmit(); this._signInAsync();}}
-        />
+        <Mutation mutation={LOGIN_USER}>
+          {(loginUser) =>
+            <Button
+              title="Log in!"
+              // onPress={() => this._handleSubmit(loginUser)}
+              onPress={() => {this._handleSubmit(loginUser); this._signInAsync();}}
+            />
+          }
+        </Mutation>
         <Text style={styles.smallTextContainer}>¿No tienes una cuenta? Regístrate</Text>
         <Button
           title="Sign Up!"
@@ -70,10 +107,20 @@ export default class LoginScreen extends React.Component {
       </View>
     );
   }
+
   _navigate = () => {
     this.props.navigation.navigate('SignUpScreen');
   }
 }
+const LOGIN_USER = gql`
+  mutation loginUser($user: UserInput!){
+    loginUser(user: $user) {
+      username
+      email
+      password
+    }
+  }
+`;
 
 const styles = StyleSheet.create({
   textContainer: {
@@ -96,3 +143,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
   },
 });
+
+export default withNavigation(LoginScreen);

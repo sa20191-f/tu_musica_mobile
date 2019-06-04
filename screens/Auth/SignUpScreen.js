@@ -1,6 +1,8 @@
 import React from 'react';
-import { View, StyleSheet, Button, Text } from 'react-native';
-
+import { View, StyleSheet, Button, Text, AsyncStorage} from 'react-native';
+import { Mutation} from 'react-apollo';
+import gql from 'graphql-tag';
+import { withNavigation } from 'react-navigation';
 import t from 'tcomb-form-native';
 
 const Form = t.form.Form;
@@ -9,7 +11,6 @@ const User = t.struct({
   username: t.String,
   email: t.String,
   password: t.String,
-  // terms: t.Boolean
 });
 
 const formStyles = {
@@ -36,38 +37,87 @@ const formStyles = {
   }
 }
 
-export default class SignUpScreen extends React.Component {
+const options = {
+  fields: {
+    username: {
+      stylesheet: formStyles,
+    },
+    email: {
+      stylesheet: formStyles,
+    },
+    password: {
+      stylesheet: formStyles,
+    }
+  },
+};
+
+class SignUpScreen extends React.Component {
   static navigationOptions = {
     title: 'Crea una cuenta',
   };
-  handleSubmit = () => {
-    const value = this._form.getValue();
-    console.log('value: ', value);
+  state = {
+
   }
+  _handleSubmit = async(mutation) => {
+    const value = this._form.getValue();
+    if (value) {
+      console.log("value:", value);
+      const user = {
+        username: value.username,
+        email: value.email,
+        password: value.password
+      }
+      await mutation({
+        variables: { user },
+      });
+      console.log("variables:", variables);
+
+      this.props.navigation.goBack();
+    }
+  }
+
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.textContainer}>Bienvenido a esta gran familia</Text>
+        <Text style={styles.textContainer}>Bienvenido a esta gran familia!</Text>
         <Form
           ref={c => this._form = c}
           type={User}
+          options={options}
         />
-        <Button
-          title="Sign up!"
-          onPress={this.handleSubmit}
-        />
+        <Mutation mutation={CREATE_USER}>
+          {(createUser) =>
+            <Button
+              title="Sign up!"
+              // onPress={() => this._handleSubmit(createUser)}
+              onPress={() => {this._handleSubmit(createUser); this._navigate();}}
+
+            />
+          }
+        </Mutation>
         <Text style={styles.smallTextContainer}>¿Ya tienes una cuenta? Inicia sesión</Text>
         <Button
-          title="Log in"
+          title="Log in!"
           onPress={this._navigate}
         />
       </View>
     );
   }
+
   _navigate = () => {
     this.props.navigation.navigate('LoginScreen');
   }
 }
+const CREATE_USER = gql`
+  mutation createUser($user: UserInput!){
+    createUser(user: $user) {
+      username
+      email
+      password
+    }
+    username
+  }
+`;
 
 const styles = StyleSheet.create({
   textContainer: {
@@ -90,3 +140,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
   },
 });
+
+export default withNavigation(SignUpScreen);
