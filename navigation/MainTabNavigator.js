@@ -6,6 +6,7 @@ import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
 import PlayScreen from '../screens/PlayScreen';
 import ListScreen from '../screens/ListScreen';
+import AddListScreen from '../screens/AddListScreen';
 
 const headerStyles = {
   headerStyle: {
@@ -56,6 +57,7 @@ PlayStack.navigationOptions = {
 
 const ListStack = createStackNavigator({
   List: ListScreen,
+  AddList: AddListScreen,
 }, {
   defaultNavigationOptions: headerStyles,
 });

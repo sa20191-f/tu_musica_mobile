@@ -4,6 +4,7 @@ import { Button } from 'react-native-elements';
 import ListItem from '../components/ListItem';
 import { graphql, compose } from 'react-apollo';
 import gql from 'graphql-tag';
+import { withNavigation } from 'react-navigation';
 
 class ListScreen extends React.Component {
   static navigationOptions = {
@@ -34,6 +35,7 @@ class ListScreen extends React.Component {
           <Button
             title='Adicionar lista'
             style={styles.buttonStyle}
+            onPress={() => this.props.navigation.navigate('AddList')}
           />
           <FlatList
             contentContainerStyle={styles.listContainer}
@@ -91,4 +93,4 @@ export default compose (
   graphql(GET_LISTS, {
     name: 'getLists',
   }),
-)(ListScreen);
+)(withNavigation(ListScreen));
