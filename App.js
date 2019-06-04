@@ -34,7 +34,7 @@ export default class App extends React.Component {
       return (
         <ApolloProvider client={client}>
           <View style={styles.container}>
-            {Platform.OS === 'android' && <StatusBar barStyle="default" />}
+            {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
             <AppNavigator />
           </View>
         </ApolloProvider>
