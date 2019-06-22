@@ -61,7 +61,6 @@ class LoginScreen extends React.Component {
   _handleSubmit = async(mutation) => {
     const value = this._form.getValue();
     if (value) {
-      console.log("value:", value);
       const user = {
         username: value.username,
         email: value.email,
@@ -70,8 +69,6 @@ class LoginScreen extends React.Component {
       await mutation({
         variables: { user },
       });
-      console.log("variables:", variables);
-
       this.props.navigation.goBack();
     }
   }
@@ -95,7 +92,10 @@ class LoginScreen extends React.Component {
             <Button
               title="Log in!"
               // onPress={() => this._handleSubmit(loginUser)}
-              onPress={() => {this._handleSubmit(loginUser); this._signInAsync();}}
+              onPress={async() => {
+                this._handleSubmit(loginUser);
+                this._signInAsync();
+              }}
             />
           }
         </Mutation>

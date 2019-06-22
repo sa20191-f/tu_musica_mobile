@@ -1,6 +1,9 @@
 import React from 'react';
-import { FlatList, View, StyleSheet, ImageBackground, AsyncStorage, Button } from 'react-native';
-import { graphql, compose } from 'react-apollo';
+import { FlatList, View, StyleSheet, ImageBackground, AsyncStorage } from 'react-native';
+import { graphql, compose, Mutation } from 'react-apollo';
+import { FileSystem, DocumentPicker } from 'expo';
+import { ReactNativeFile } from 'apollo-upload-client';
+import { Button } from 'react-native-elements';
 import gql from 'graphql-tag';
 import SongItem from '../components/SongItem';
 
@@ -12,28 +15,11 @@ class HomeScreen extends React.Component {
     super(props);
   }
   state = { 
-    albums: [
-      {
-        title: 'Hola',
-        subtitle: 'Que mas pues',
-      },
-      {
-        title: 'Todo',
-        subtitle: 'Bien y usted',
-      },
-      {
-        title: 'La puteria',
-        subtitle: 'Pana',
-      },
-      {
-        title: 'Hola',
-        subtitle: 'Que mas pues',
-      }, 
-    ],
+    songs: [],
     listRefreshing: true,
   }
   componentDidMount() {
-    /* this._getSongsData(); */
+    this._getSongsData();
   }
   _signOutAsync = async () => {
     await AsyncStorage.clear();
@@ -46,11 +32,24 @@ class HomeScreen extends React.Component {
         style={styles.backgroundStyle}
       >
         <View style={styles.container}>
+          <Mutation mutation={UPLOAD_SONG}>
+            {(uploadSongMutation) => 
+              <Button
+                onPress={() => this._onPressLearnMore(uploadSongMutation)}
+                title='Agregar canción'
+                style={styles.buttonStyle}
+              />
+            }
+          </Mutation>
           <FlatList
             contentContainerStyle={styles.listContainer}
-            data={this.state.albums}
+            data={this.state.songs}
             renderItem={
-              ({ item }) => <SongItem title={item.title} subtitle={item.subtitle} />
+              ({ item }) =>
+              <SongItem
+                title={item.artist}
+                subtitle={item.song_name}
+              />
             }
             numColumns={1}
             keyExtractor={(item, index) => index.toString()}
@@ -66,13 +65,42 @@ class HomeScreen extends React.Component {
   _getSongsData = async() => {
     this.setState({ listRefreshing: true });
     const response = await this.props.getSongs.refetch();
-    console.log(response);
+    if (response) {
+      this.setState({ songs: response.data.songs });
+    }
     this.setState({ listRefreshing: false });
-  }
+  };
+
+  _onPressLearnMore = async(mutation) => {
+    const song = await DocumentPicker.getDocumentAsync();
+    const infoSong = await FileSystem.getInfoAsync(song.uri);
+    const file = new ReactNativeFile({
+      uri: infoSong.uri,
+      name: song.name,
+      type: 'audio/mp3'
+    });
+    mutation({
+      variables: { file },
+    });
+    await this._getSongsData();
+  };
 }
 const GET_SONG = gql`
   query {
-    songTest
+    songs {
+      id
+      path
+      song_name
+      artist
+    }
+  }
+`;
+
+const UPLOAD_SONG = gql`
+  mutation uploadSong($file: Upload!) {
+    uploadSong(file: $file) {
+      filename
+    }
   }
 `;
 
@@ -88,6 +116,9 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     height: '100%',
+  },
+  buttonStyle: {
+    margin: 10,
   }
 });
 

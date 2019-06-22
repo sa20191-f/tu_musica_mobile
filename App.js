@@ -10,7 +10,8 @@ import { InMemoryCache } from 'apollo-cache-inmemory';
 const cache = new InMemoryCache();
 const client = new ApolloClient({
   link: createUploadLink({
-    uri: 'http://172.20.10.8:5000/graphql'
+    uri: 'http://192.168.1.72:5000/graphql'
+    // uri: 'http://172.20.10.8:5000/graphql'
     // uri: 'http://192.168.99.102:5000/graphiql'  Fede
   }),
   cache,
