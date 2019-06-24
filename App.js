@@ -6,11 +6,12 @@ import ApolloClient from 'apollo-client';
 import { ApolloProvider } from 'react-apollo';
 import { createUploadLink } from 'apollo-upload-client';
 import { InMemoryCache } from 'apollo-cache-inmemory';
+import config from './config';
 
 const cache = new InMemoryCache();
 const client = new ApolloClient({
   link: createUploadLink({
-    uri: 'http://192.168.1.72:5000/graphql'
+    uri: `${config.TUMUSICA_URL}:5000/graphql`
     // uri: 'http://172.20.10.8:5000/graphql'
     // uri: 'http://192.168.99.102:5000/graphiql'  Fede
   }),

@@ -1,7 +1,8 @@
 import React from 'react';
 import { FlatList, View, StyleSheet, ImageBackground, AsyncStorage } from 'react-native';
 import { graphql, compose, Mutation } from 'react-apollo';
-import { FileSystem, DocumentPicker } from 'expo';
+import { DocumentPicker } from 'expo';
+import * as FileSystem from 'expo-file-system';
 import { ReactNativeFile } from 'apollo-upload-client';
 import { Button } from 'react-native-elements';
 import gql from 'graphql-tag';
@@ -35,7 +36,7 @@ class HomeScreen extends React.Component {
           <Mutation mutation={UPLOAD_SONG}>
             {(uploadSongMutation) => 
               <Button
-                onPress={() => this._onPressLearnMore(uploadSongMutation)}
+                onPress={() => this._onPressAddSong(uploadSongMutation)}
                 title='Agregar canción'
                 style={styles.buttonStyle}
               />
@@ -49,6 +50,8 @@ class HomeScreen extends React.Component {
               <SongItem
                 title={item.artist}
                 subtitle={item.song_name}
+                onPressCard={() => this._onPressSong(item)}
+                onPressIcon={ () => console.log('icon: ' + item)}
               />
             }
             numColumns={1}
@@ -71,7 +74,7 @@ class HomeScreen extends React.Component {
     this.setState({ listRefreshing: false });
   };
 
-  _onPressLearnMore = async(mutation) => {
+  _onPressAddSong = async(mutation) => {
     const song = await DocumentPicker.getDocumentAsync();
     const infoSong = await FileSystem.getInfoAsync(song.uri);
     const file = new ReactNativeFile({
@@ -82,8 +85,15 @@ class HomeScreen extends React.Component {
     mutation({
       variables: { file },
     });
-    await this._getSongsData();
+    setTimeout(async() => {
+      await this._getSongsData();
+    }, 10000);
   };
+  _onPressSong(item) {
+    this.props.navigation.navigate('Play', {
+      song: item,
+    });
+  }
 }
 const GET_SONG = gql`
   query {

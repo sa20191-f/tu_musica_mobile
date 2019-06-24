@@ -1,19 +1,22 @@
 import React from 'react';
 import { StyleSheet, ImageBackground,
-  View, Slider, Platform } from 'react-native';
+  View, Slider, Platform, TouchableWithoutFeedback } from 'react-native';
 import { StyleText }  from '../components/StyleText';
 import { Icon } from 'expo';
+import { Audio } from 'expo-av';
+import config from '../config';
 
 export default class PlayScreen extends React.Component {
   static navigationOptions = {
     title: 'Playing from music',
   };
   state = {
-    title: 'HOLA',
-    artist: 'NICOLAS',
+    title: null,
+    artist: null,
     currentPosition: 0,
-    trackLength: 120,
+    trackLength: 0,
     paused: false,
+    song: null,
   }
 
   render() {
@@ -48,34 +51,38 @@ export default class PlayScreen extends React.Component {
           </View>
           <View style={styles.controlContainer}>
             <View style={{ width: 40 }} />
-            <Icon.Ionicons 
+            {/* <Icon.Ionicons 
               name={Platform.OS === 'ios' ? 'ios-skip-backward' : 'md-skip-backward'}
               size={45}
               color="white"
-            />
+            /> */}
             <View style={{ width: 20 }} />
             {this.state.paused ?
-              <View style={styles.controlPlayButton}>
-                <Icon.Ionicons 
-                  name={Platform.OS === 'ios' ? 'ios-play' : 'md-play'}
-                  size={45}
-                  color="white"
-                />
-              </View> :
-              <View style={styles.controlPlayButton}>
-                <Icon.Ionicons 
-                  name={Platform.OS === 'ios' ? 'ios-pause' : 'md-pause'}
-                  size={45}
-                  color="white"
-                />
+              <TouchableWithoutFeedback onPress={() => this._playSong()}>
+                <View style={styles.controlPlayButton}>
+                  <Icon.Ionicons 
+                    name={Platform.OS === 'ios' ? 'ios-play' : 'md-play'}
+                    size={45}
+                    color="white"
+                  />
               </View>
+              </TouchableWithoutFeedback> :
+              <TouchableWithoutFeedback onPress={() => this._pauseSong()}>
+                <View style={styles.controlPlayButton}>
+                  <Icon.Ionicons 
+                    name={Platform.OS === 'ios' ? 'ios-pause' : 'md-pause'}
+                    size={45}
+                    color="white"
+                  />
+                </View>
+              </TouchableWithoutFeedback>
             }
             <View style={{ width: 20 }} />
-              <Icon.Ionicons 
-                name={Platform.OS === 'ios' ? 'ios-skip-forward' : 'md-skip-forward'}
-                size={45}
-                color="white"
-              />
+            {/* <Icon.Ionicons 
+              name={Platform.OS === 'ios' ? 'ios-skip-forward' : 'md-skip-forward'}
+              size={45}
+              color="white"
+            /> */}
             <View style={{ width: 40 }} />
           </View>
 
@@ -84,6 +91,39 @@ export default class PlayScreen extends React.Component {
     );
   }
 
+  async componentDidMount() {
+    const { navigation } = this.props;
+    const song = navigation.getParam('song', null);
+    if (!song) {
+      alert('Choose one song to play');
+      navigation.navigate('Home');
+    }
+    this.setState({ title: song.song_name, artist: song.artist, paused: false,  });
+    this.song = new Audio.Sound();
+    await this.song.loadAsync({ uri: `${config.TUMUSICA_URL}:3002/getfile/${song.path}` });
+    const status = await this.song.getStatusAsync();
+    this.setState({ trackLength: status.durationMillis ? status.durationMillis : 120 });
+    await this.song.playAsync();
+  }
+  async _playSong() {
+    const status = await this.song.getStatusAsync();
+    if (status.isLoaded) {
+      this.setState({ paused: false });
+      await this.song.playAsync();
+    }
+  }
+  async _pauseSong() {
+    const status = await this.song.getStatusAsync();
+    if (status.isLoaded) {
+      this.setState({ paused: true });
+      await this.song.pauseAsync();
+    }
+  }
+  async componentWillUnmount() {
+    await this.song.pauseAsync();
+    await this.song.unloadAsync();
+    this.song = null;
+  }
   _pad(n, width, z=0) {
     n = n + '';
     return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
@@ -92,7 +132,6 @@ export default class PlayScreen extends React.Component {
     pad(Math.floor(position / 60), 2),
     pad(position % 60, 2),
   ]);
-
 }
 
 const styles = StyleSheet.create({
