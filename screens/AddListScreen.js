@@ -73,7 +73,8 @@ class AddListScreen extends React.Component {
       const list = {
         name: value.nameList,
         image: value.urlImage,
-        user_id: await AsyncStorage.getItem('userId')
+        user_id: await AsyncStorage.getItem('userId'),
+        email: "john@mail.com"
       }
       await mutation({
         variables: { list },
