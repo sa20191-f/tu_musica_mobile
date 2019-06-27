@@ -1,12 +1,15 @@
 import React from 'react';
-import { FlatList, View, StyleSheet, ImageBackground, AsyncStorage } from 'react-native';
+import { FlatList, View, StyleSheet, ImageBackground, AsyncStorage, Platform, Modal,
+Text, TouchableHighlight, Alert } from 'react-native';
 import { graphql, compose, Mutation } from 'react-apollo';
+import { Permissions, Notifications } from 'expo';
 import { DocumentPicker } from 'expo';
 import * as FileSystem from 'expo-file-system';
 import { ReactNativeFile } from 'apollo-upload-client';
 import { Button } from 'react-native-elements';
 import gql from 'graphql-tag';
 import SongItem from '../components/SongItem';
+import ListScreen from './ListScreen';
 
 class HomeScreen extends React.Component {
   static navigationOptions = {
@@ -18,10 +21,51 @@ class HomeScreen extends React.Component {
   state = { 
     songs: [],
     listRefreshing: true,
+    modalVisible: false,
+    itemSelected: null,
+    addMutation: null,
+    alertShowed: false,
   }
-  componentDidMount() {
+  async componentDidMount() {
     this._getSongsData();
+    const { status: existingStatus } = await Permissions.getAsync(
+      Permissions.NOTIFICATIONS
+    );
+    let finalStatus = existingStatus;
+    if (existingStatus !== 'granted') {
+      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+      finalStatus = status;
+    }
+    if (finalStatus !== 'granted') {
+      return;
+    }
+    let tokenPush = await Notifications.getExpoPushTokenAsync();
+    const token = {
+      userID: await AsyncStorage.getItem('userId'),
+      tokenType: 1,
+      token: tokenPush,
+    }
+    await this.props.addMutation({
+      variables: { token }
+    });
+    this._notificationSubscription = Notifications.addListener(this._handleNotification);
   }
+  _handleNotification = (notification) => {
+    console.log(`SOY UN ${Platform.OS}`);
+    console.log(notification);
+    if (!this.state.alertShowed) {
+      this.setState({ alertShowed: true });
+      Alert.alert(
+        notification.data.title,
+        notification.data.body,
+        [
+          { text: 'OK', onPress: () => this.setState({ alertShowed: false }) },
+        ],
+        { cancelable: false }
+      )
+    }
+    
+  };
   _signOutAsync = async () => {
     await AsyncStorage.clear();
     this.props.navigation.navigate('Auth');
@@ -51,7 +95,7 @@ class HomeScreen extends React.Component {
                 title={item.artist}
                 subtitle={item.song_name}
                 onPressCard={() => this._onPressSong(item)}
-                onPressIcon={ () => console.log('icon: ' + item)}
+                onPressIcon={() => this._onPressAddToList(item)}
               />
             }
             numColumns={1}
@@ -61,6 +105,17 @@ class HomeScreen extends React.Component {
           />
         </View>
         <Button title="Actually, sign me out :)" onPress={this._signOutAsync} />
+        <Modal
+          animationType="slide"
+          transparent={false}
+          visible={this.state.modalVisible}
+          onRequestClose={() => {
+            Alert.alert('Modal has been closed.');
+          }}>
+            <ListScreen itemSelected={this.state.itemSelected} cancel={() => this.setState({
+              modalVisible: false,
+            })} />
+        </Modal>
       </ImageBackground>
     );
   }
@@ -73,7 +128,6 @@ class HomeScreen extends React.Component {
     }
     this.setState({ listRefreshing: false });
   };
-
   _onPressAddSong = async(mutation) => {
     const song = await DocumentPicker.getDocumentAsync();
     const infoSong = await FileSystem.getInfoAsync(song.uri);
@@ -93,7 +147,10 @@ class HomeScreen extends React.Component {
     this.props.navigation.navigate('Play', {
       song: item,
     });
-  }
+  };
+  _onPressAddToList(item) {
+    this.setState({ modalVisible: true, itemSelected: item });
+  };
 }
 const GET_SONG = gql`
   query {
@@ -111,6 +168,11 @@ const UPLOAD_SONG = gql`
     uploadSong(file: $file) {
       filename
     }
+  }
+`;
+const ADD_TOKEN = gql`
+  mutation addToken($token: TokenInput!) {
+    addToken(token: $token)
   }
 `;
 
@@ -135,5 +197,8 @@ const styles = StyleSheet.create({
 export default compose (
   graphql(GET_SONG, {
     name: 'getSongs',
+  }),
+  graphql(ADD_TOKEN, {
+    name: 'addMutation'
   }),
 )(HomeScreen)

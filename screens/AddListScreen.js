@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, ImageBackground } from 'react-native';
+import { StyleSheet, View, ImageBackground, AsyncStorage } from 'react-native';
 import { Button } from 'react-native-elements';
 import { Mutation } from 'react-apollo';
 import gql from 'graphql-tag';
@@ -73,7 +73,7 @@ class AddListScreen extends React.Component {
       const list = {
         name: value.nameList,
         image: value.urlImage,
-        user_id: 1
+        user_id: await AsyncStorage.getItem('userId')
       }
       await mutation({
         variables: { list },

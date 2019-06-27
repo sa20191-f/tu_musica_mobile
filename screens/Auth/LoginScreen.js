@@ -66,17 +66,15 @@ class LoginScreen extends React.Component {
         email: value.email,
         password: value.password
       }
-      await mutation({
-        variables: { user },
+      const response = await mutation({
+        variables: { user }
       });
-      this.props.navigation.goBack();
+      const { token , id } = response.data.loginUser;
+      await AsyncStorage.setItem('userToken', token.token.toString());
+      await AsyncStorage.setItem('userId', id.toString());
+      this.props.navigation.navigate('Main');
     }
   }
-
-  _signInAsync = async () => {
-    await AsyncStorage.setItem('userToken', 'abc');
-    this.props.navigation.navigate('Main');
-  };
 
   render() {
     return (
@@ -87,14 +85,13 @@ class LoginScreen extends React.Component {
           type={User}
           options={options}
         />
-        <Mutation mutation={LOGIN_USER}>
+        <Mutation mutation={LOGIN_USER} >
           {(loginUser) =>
             <Button
               title="Log in!"
               // onPress={() => this._handleSubmit(loginUser)}
               onPress={async() => {
                 this._handleSubmit(loginUser);
-                this._signInAsync();
               }}
             />
           }
@@ -113,11 +110,10 @@ class LoginScreen extends React.Component {
   }
 }
 const LOGIN_USER = gql`
-  mutation loginUser($user: UserInput!){
+  mutation loginUser($user: UserInput!) {
     loginUser(user: $user) {
-      username
-      email
-      password
+      token { token }
+      id
     }
   }
 `;

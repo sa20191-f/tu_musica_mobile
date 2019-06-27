@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, View, StyleSheet } from 'react-native'; 
+import { Image, View, StyleSheet, TouchableWithoutFeedback } from 'react-native'; 
 import { StyleText } from './StyleText';
 
 class ListItem extends React.Component {
@@ -7,28 +7,30 @@ class ListItem extends React.Component {
     super(props);
   }
   render() {
-    const { title, image, subtitle } = this.props;
+    const { title, image, subtitle, onPress } = this.props;
     return (
-      <View style={styles.singleAlbumContainer}>
-        <View style={styles.boxContainer}>
-          <View>
-            <Image 
-              style={styles.imageStyle}
-              source={image ? { uri: image } : require('../assets/images/music-album2.jpg')}
-            />
-          </View>
-          <View style={styles.albumInfoContainer}>
-            <StyleText style={styles.albumText}>
-              {title}
-            </StyleText>
-            {subtitle &&
-              <StyleText style={{ color: 'white', }}>
-              {subtitle}
+      <TouchableWithoutFeedback onPress={onPress}>
+        <View style={styles.singleAlbumContainer}>
+          <View style={styles.boxContainer}>
+            <View>
+              <Image 
+                style={styles.imageStyle}
+                source={image ? { uri: image } : require('../assets/images/music-album2.jpg')}
+              />
+            </View>
+            <View style={styles.albumInfoContainer}>
+              <StyleText style={styles.albumText}>
+                {title}
               </StyleText>
-            }
+              {subtitle &&
+                <StyleText style={{ color: 'white', }}>
+                {subtitle}
+                </StyleText>
+              }
+            </View>
           </View>
         </View>
-      </View>
+      </TouchableWithoutFeedback>
     );
   }
 }

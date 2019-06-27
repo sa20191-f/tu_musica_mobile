@@ -31,17 +31,30 @@ class ListScreen extends React.Component {
         source={require('../assets/images/lists-background.jpg')}
         style={styles.backgroundStyle}
       >
-        <View style={styles.container}>
-          <Button
-            title='Adicionar lista'
-            style={styles.buttonStyle}
-            onPress={() => this.props.navigation.navigate('AddList')}
-          />
+        <View style={[styles.container, this.props.itemSelected != null ? styles.paddingTop : {}]}>
+          {this.props.itemSelected != null ? 
+            <Button
+              title='Cancelar'
+              style={styles.buttonStyle}
+              onPress={this.props.cancel}
+            /> :
+            <Button
+              title='Adicionar lista'
+              style={styles.buttonStyle}
+              onPress={() => this.props.navigation.navigate('AddList')}
+            />
+          }
+          
           <FlatList
             contentContainerStyle={styles.listContainer}
             data={this.state.lists}
             renderItem={
-              ({ item }) => <ListItem title={item.name} image={item.image} />
+              ({ item }) => 
+                <ListItem
+                  title={item.name}
+                  image={item.image}
+                  onPress={() => this._onPressItemList(item)}
+                />
             }
             numColumns={2}
             keyExtractor={(item, index) => index}
@@ -51,6 +64,13 @@ class ListScreen extends React.Component {
         </View>
       </ImageBackground>
     )
+  }
+  _onPressItemList(item) {
+    if (this.props.itemSelected != null) {
+      
+    } else {
+
+    }
   }
 }
 
@@ -76,6 +96,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor:'rgba(0,0,0,0.7)',
+  },
+  paddingTop: {
+    marginTop: 22,
   },
   listContainer: { 
     flexGrow: 1,
