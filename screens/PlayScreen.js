@@ -94,9 +94,25 @@ export default class PlayScreen extends React.Component {
   async componentDidMount() {
     const { navigation } = this.props;
     const song = navigation.getParam('song', null);
+    await this.initSong(song);
+  }
+
+  async componentWillReceiveProps(nextProps) {
+    const { navigation } = nextProps;
+    const song = navigation.getParam('song', null);
+    await this.initSong(song);
+
+  }
+
+  async initSong(song) {
     if (!song) {
       alert('Choose one song to play');
       navigation.navigate('Home');
+    }
+    if (this.song) {
+      await this.song.pauseAsync();
+      await this.song.unloadAsync();
+      this.song = null;
     }
     this.setState({ title: song.song_name, artist: song.artist, paused: false,  });
     this.song = new Audio.Sound();

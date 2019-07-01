@@ -40,15 +40,17 @@ class HomeScreen extends React.Component {
       return;
     }
     let tokenPush = await Notifications.getExpoPushTokenAsync();
+    this._notificationSubscription = Notifications.addListener(this._handleNotification);
     const token = {
       userID: await AsyncStorage.getItem('userId'),
       tokenType: 1,
       token: tokenPush,
     }
+    
     await this.props.addMutation({
       variables: { token }
     });
-    this._notificationSubscription = Notifications.addListener(this._handleNotification);
+    
   }
   _handleNotification = (notification) => {
     console.log(`SOY UN ${Platform.OS}`);
