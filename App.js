@@ -11,7 +11,7 @@ import config from './config';
 const cache = new InMemoryCache();
 const client = new ApolloClient({
   link: createUploadLink({
-    uri: `${config.TUMUSICA_URL}:5000/graphql`
+    uri: `${config.TUMUSICA_URL}/graphql`
     // uri: 'http://172.20.10.8:5000/graphql'
     // uri: 'http://192.168.99.102:5000/graphiql'  Fede
   }),

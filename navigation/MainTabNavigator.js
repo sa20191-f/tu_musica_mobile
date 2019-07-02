@@ -6,6 +6,7 @@ import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
 import PlayScreen from '../screens/PlayScreen';
 import ListScreen from '../screens/ListScreen';
+import VideoScreen from '../screens/VideoScreen';
 import AddListScreen from '../screens/AddListScreen';
 
 const headerStyles = {
@@ -72,10 +73,27 @@ ListStack.navigationOptions = {
   ),
 };
 
+const VideoStack = createStackNavigator({
+  Video: VideoScreen,
+}, {
+  defaultNavigationOptions: headerStyles,
+});
+
+VideoStack.navigationOptions = {
+  tabBarLabel: 'Video',
+  tabBarIcon: ({ focused }) => (
+    <TabBarIcon
+      focused={focused}
+      name={Platform.OS === 'ios' ? 'ios-videocam' : 'md-videocam'}
+    />
+  ),
+};
+
 export default createBottomTabNavigator({
   HomeStack,
   PlayStack,
   ListStack,
+  VideoStack,
 }, {
   tabBarOptions: {
     style: {

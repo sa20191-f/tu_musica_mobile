@@ -1,15 +1,16 @@
 import React from 'react';
-import { FlatList, View, StyleSheet, ImageBackground, AsyncStorage, Platform, Modal,
-Text, TouchableHighlight, Alert } from 'react-native';
+import { FlatList, View, StyleSheet, ImageBackground, AsyncStorage, Platform, Modal, 
+  TextInput , Alert } from 'react-native';
 import { graphql, compose, Mutation } from 'react-apollo';
 import { Permissions, Notifications } from 'expo';
 import { DocumentPicker } from 'expo';
 import * as FileSystem from 'expo-file-system';
 import { ReactNativeFile } from 'apollo-upload-client';
-import { Button } from 'react-native-elements';
+import { Button, Input } from 'react-native-elements';
 import gql from 'graphql-tag';
 import SongItem from '../components/SongItem';
 import ListScreen from './ListScreen';
+import config from '../config';
 
 class HomeScreen extends React.Component {
   static navigationOptions = {
@@ -23,8 +24,14 @@ class HomeScreen extends React.Component {
     listRefreshing: true,
     modalVisible: false,
     itemSelected: null,
-    addMutation: null,
     alertShowed: false,
+    loader: false,
+    boxVisible: false,
+    infoSong: {
+      path: '',
+      song_name: '',
+      artist: '',
+    },
   }
   async componentDidMount() {
     this._getSongsData();
@@ -118,6 +125,47 @@ class HomeScreen extends React.Component {
               modalVisible: false,
             })} />
         </Modal>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={this.state.boxVisible}
+          onRequestClose={() => {}}
+        >
+          <View
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <View
+              style={{
+                padding: 10,
+                height: 180,
+                width: 300,
+                backgroundColor: "#fff",
+                borderRadius: 15,
+              }}
+            >
+              <Input
+                placeholder='Nombre de cancion'
+                onChangeText={(text) => this.setState({ infoSong: { ...this.state.infoSong, song_name: text } })}
+                value={this.state.infoSong.song_name}
+              />
+              <Input
+                placeholder='Artista'
+                onChangeText={(text) => this.setState({ infoSong: { ...this.state.infoSong, artist: text } })}
+                value={this.state.infoSong.artist}
+              />
+              <Button
+                onPress={() => this._uploadSong()}
+                title='Subir canción'
+                style={styles.buttonStyle}
+              />
+            </View>
+          </View>
+        </Modal>
       </ImageBackground>
     );
   }
@@ -130,21 +178,49 @@ class HomeScreen extends React.Component {
     }
     this.setState({ listRefreshing: false });
   };
+  _uploadSong = async() => {
+    this.setState({ boxVisible: false });
+    const infoSong = this.state.infoSong;
+    await this.props.uploadSong({
+      variables: { infoSong },
+    });
+    this.setState({
+      infoSong: {
+        path: '',
+        song_name: '',
+        artist: '',
+      }
+    })
+  }
   _onPressAddSong = async(mutation) => {
     const song = await DocumentPicker.getDocumentAsync();
-    const infoSong = await FileSystem.getInfoAsync(song.uri);
+    const info = await FileSystem.getInfoAsync(song.uri);
+    let data = new FormData();
     const file = new ReactNativeFile({
-      uri: infoSong.uri,
-      name: song.name,
+      uri: info.uri,
+      name: 'My song',
       type: 'audio/mp3'
     });
-    mutation({
-      variables: { file },
-    });
-    setTimeout(async() => {
-      await this._getSongsData();
-    }, 10000);
+    data.append("myFile", file);
+    fetch(`${config.TUMUSICA_URL}:3002/upload_song`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      },
+      body: data,
+    }).then(async response => {
+      if (response.ok) {
+        response.json().then(async json => {
+          this.setState({ 
+            infoSong: { ...this.state.infoSong, path: json.filename },
+            boxVisible: true,
+            uploadSong: mutation,
+          });
+        });
+      }
+    }).catch(element => console.log("error",element));
   };
+
   _onPressSong(item) {
     this.props.navigation.navigate('Play', {
       song: item,
@@ -166,9 +242,10 @@ const GET_SONG = gql`
 `;
 
 const UPLOAD_SONG = gql`
-  mutation uploadSong($file: Upload!) {
-    uploadSong(file: $file) {
-      filename
+  mutation uploadInfoSong($infoSong : InfoSongInput!) {
+    uploadInfoSong(infoSong: $infoSong) {
+      song_name
+      artist
     }
   }
 `;
@@ -202,5 +279,8 @@ export default compose (
   }),
   graphql(ADD_TOKEN, {
     name: 'addMutation'
+  }),
+  graphql(UPLOAD_SONG, {
+    name: 'uploadSong'
   }),
 )(HomeScreen)

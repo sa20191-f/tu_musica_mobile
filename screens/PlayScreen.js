@@ -39,7 +39,7 @@ export default class PlayScreen extends React.Component {
             {/* <View>
               @TODO Implement times
             </View> */}
-            <Slider
+            {/* <Slider
               maximumValue={Math.max(this.state.trackLength, 1, this.state.currentPosition + 1)}
               value={this.state.currentPosition}
               style={styles.sliderStyle}
@@ -47,7 +47,7 @@ export default class PlayScreen extends React.Component {
               maximumTrackTintColor='rgba(255, 255, 255, 0.14)'
               thumbStyle={styles.sliderThumb}
               trackStyle={styles.sliderTrack}
-            />
+            /> */}
           </View>
           <View style={styles.controlContainer}>
             <View style={{ width: 40 }} />
@@ -116,10 +116,10 @@ export default class PlayScreen extends React.Component {
     }
     this.setState({ title: song.song_name, artist: song.artist, paused: false,  });
     this.song = new Audio.Sound();
-    await this.song.loadAsync({ uri: `${config.TUMUSICA_URL}:3002/getfile/${song.path}` });
-    const status = await this.song.getStatusAsync();
-    this.setState({ trackLength: status.durationMillis ? status.durationMillis : 120 });
-    await this.song.playAsync();
+    await this.song.loadAsync({ uri: `${config.TUMUSICA_URL}:3002/getfile/${song.path}` }, {}, false);
+    setTimeout(async() => {
+      await this.song.playAsync(); 
+    }, (100));
   }
   async _playSong() {
     const status = await this.song.getStatusAsync();
