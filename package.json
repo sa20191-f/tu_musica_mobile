@@ -16,7 +16,7 @@
     "apollo-client": "^2.6.0",
     "apollo-link-http": "^1.5.14",
     "apollo-upload-client": "^10.0.1",
-    "expo": "^33.0.0",
+    "expo": "^46.0.14",
     "expo-av": "^5.0.2",
     "expo-file-system": "^5.0.1",
     "graphql": "^14.3.1",
